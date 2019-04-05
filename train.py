@@ -13,9 +13,11 @@ import scipy.sparse as sp
 import sys
 import json
 
+import torch.optim as optim
+
 from preprocessing import create_trainvaltest_split, \
     sparse_to_tuple, preprocess_user_item_features, globally_normalize_bipartite_adjacency, \
-    load_data_monti, load_official_trainvaltest_split, normalize_features
+    load_data_monti, load_official_trainvaltest_split, normalize_features, tuple_to_tensor
 from model import RecommenderGAE, RecommenderSideInfoGAE
 
 # Set random seed
@@ -239,8 +241,8 @@ test_v = list(set(test_v_indices))
 test_u_dict = {n: i for i, n in enumerate(test_u)}
 test_v_dict = {n: i for i, n in enumerate(test_v)}
 
-test_u_indices = np.array([test_u_dict[o] for o in test_u_indices])
-test_v_indices = np.array([test_v_dict[o] for o in test_v_indices])
+test_u_indices = torch.from_numpy(np.array([test_u_dict[o] for o in test_u_indices]))
+test_v_indices = torch.from_numpy(np.array([test_v_dict[o] for o in test_v_indices]))
 
 test_support = support[np.array(test_u)]
 test_support_t = support_t[np.array(test_v)]
@@ -251,8 +253,8 @@ val_v = list(set(val_v_indices))
 val_u_dict = {n: i for i, n in enumerate(val_u)}
 val_v_dict = {n: i for i, n in enumerate(val_v)}
 
-val_u_indices = np.array([val_u_dict[o] for o in val_u_indices])
-val_v_indices = np.array([val_v_dict[o] for o in val_v_indices])
+val_u_indices = torch.from_numpy(np.array([val_u_dict[o] for o in val_u_indices]))
+val_v_indices = torch.from_numpy(np.array([val_v_dict[o] for o in val_v_indices]))
 
 val_support = support[np.array(val_u)]
 val_support_t = support_t[np.array(val_v)]
@@ -263,22 +265,22 @@ train_v = list(set(train_v_indices))
 train_u_dict = {n: i for i, n in enumerate(train_u)}
 train_v_dict = {n: i for i, n in enumerate(train_v)}
 
-train_u_indices = np.array([train_u_dict[o] for o in train_u_indices])
-train_v_indices = np.array([train_v_dict[o] for o in train_v_indices])
+train_u_indices = torch.from_numpy(np.array([train_u_dict[o] for o in train_u_indices]))
+train_v_indices = torch.from_numpy(np.array([train_v_dict[o] for o in train_v_indices]))
 
 train_support = support[np.array(train_u)]
 train_support_t = support_t[np.array(train_v)]
 
 # features as side info
 if FEATURES:
-    test_u_features_side = u_features_side[np.array(test_u)]
-    test_v_features_side = v_features_side[np.array(test_v)]
+    test_u_features_side = torch.from_numpy(u_features_side[np.array(test_u)])
+    test_v_features_side = torch.from_numpy(v_features_side[np.array(test_v)])
 
-    val_u_features_side = u_features_side[np.array(val_u)]
-    val_v_features_side = v_features_side[np.array(val_v)]
+    val_u_features_side = torch.from_numpy(u_features_side[np.array(val_u)])
+    val_v_features_side = torch.from_numpy(v_features_side[np.array(val_v)])
 
-    train_u_features_side = u_features_side[np.array(train_u)]
-    train_v_features_side = v_features_side[np.array(train_v)]
+    train_u_features_side = torch.from_numpy(u_features_side[np.array(train_u)])
+    train_v_features_side = torch.from_numpy(v_features_side[np.array(train_v)])
 
 else:
     test_u_features_side = None
@@ -291,14 +293,14 @@ else:
     train_v_features_side = None
 
 # Convert sparse placeholders to tuples to construct feed_dict
-test_support = sparse_to_tuple(test_support)
-test_support_t = sparse_to_tuple(test_support_t)
+test_support = tuple_to_tensor(sparse_to_tuple(test_support), NUMCLASSES, num_items)
+test_support_t = tuple_to_tensor(sparse_to_tuple(test_support_t), NUMCLASSES, num_users)
 
-val_support = sparse_to_tuple(val_support)
-val_support_t = sparse_to_tuple(val_support_t)
+val_support = tuple_to_tensor(sparse_to_tuple(val_support), NUMCLASSES, num_items)
+val_support_t = tuple_to_tensor(sparse_to_tuple(val_support_t), NUMCLASSES, num_users)
 
-train_support = sparse_to_tuple(train_support)
-train_support_t = sparse_to_tuple(train_support_t)
+train_support = tuple_to_tensor(sparse_to_tuple(train_support), NUMCLASSES, num_items)
+train_support_t = tuple_to_tensor(sparse_to_tuple(train_support_t), NUMCLASSES, num_users)
 
 u_features_tuple = sparse_to_tuple(u_features)
 v_features_tuple = sparse_to_tuple(v_features)
@@ -307,6 +309,11 @@ assert u_features_tuple[2][1] == v_features_tuple[2][1], 'Number of features of 
 num_features = u_features_tuple[2][1]
 u_features_nonzero = u_features_tuple[1].shape[0]
 v_features_nonzero = v_features[1].shape[0]
+
+train_labels = torch.from_numpy(train_labels).long()
+val_labels = torch.from_numpy(val_labels).long()
+test_labels = torch.from_numpy(test_labels).long()
+class_values = torch.from_numpy(class_values).float()
 
 # create model
 if FEATURES:
@@ -343,6 +350,9 @@ else:
                            learning_rate=LR,
                            )
 
+#optimizer = optim.Adam(model.parameters(), lr=LR, betas=(0.9, 0.999), eps=1.e-8)
+optimizer = optim.Adam([p for l in model.layers for p in list(l.parameters())], lr=LR, betas=(0.9, 0.999), eps=1.e-8)
+
 best_val_score = np.inf
 best_val_loss = np.inf
 best_epoch = 0
@@ -357,8 +367,14 @@ for epoch in range(NB_EPOCH):
     # Run single weight update
     # outs = sess.run([model.opt_op, model.loss, model.rmse], feed_dict=train_feed_dict)
     # with exponential moving averages
-    _, train_avg_loss, train_rms = model(train_support, train_support_t, train_labels, train_u_indices, train_v_indices, train_u_features_side, train_v_features_side)
+    model.train()
+    _, train_avg_loss, train_rmse = model(train_support, train_support_t, train_labels, train_u_indices, train_v_indices, train_u_features_side, train_v_features_side)
 
+    optimizer.zero_grad()
+    train_avg_loss.backward()
+    optimizer.step()
+
+    model.eval()
     _, val_avg_loss, val_rmse = model(val_support, val_support_t, val_labels, val_u_indices, val_v_indices, val_u_features_side, val_v_features_side)
 
     if VERBOSE:

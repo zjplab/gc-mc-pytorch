@@ -7,10 +7,20 @@ import pickle as pkl
 import os
 import h5py
 import pandas as pd
+import torch
 
 
 from data_utils import load_data, map_data, download_dataset
 
+def tuple_to_tensor(data, num_classes, num_items):
+	shapes = [data[2][0], data[2][1]]
+	values = torch.from_numpy(data[1]).float()
+	indices = torch.from_numpy(data[0]).long().t()
+	t = torch.sparse.FloatTensor(indices, values, torch.Size(shapes)).to_dense()
+	t = t.view(-1, num_classes, num_items).permute(1,0,2)
+	t = [m.to_sparse() for m in t]
+
+	return t
 
 def normalize_features(feat):
 

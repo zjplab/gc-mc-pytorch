@@ -10,7 +10,7 @@ from metrics import softmax_accuracy, expected_rmse, softmax_cross_entropy
 
 class RecommenderGAE(nn.Module):
     def __init__(self, u_feature, v_features, u_features_nonzero, v_features_nonzero, class_values, dropout, 
-				 input_dim, num_classes, num_support,
+                 input_dim, num_classes, num_support,
                  learning_rate, num_basis_functions, hidden, num_users, num_items, accum,
                  self_connections=False, **kwargs):
         super(RecommenderGAE, self).__init__()
@@ -124,6 +124,8 @@ class RecommenderSideInfoGAE(nn.Module):
                  num_side_features, self_connections=False, **kwargs):
         super(RecommenderSideInfoGAE, self).__init__()
 
+        u_features = self.csr_to_tensor(u_features)
+        v_features = self.csr_to_tensor(v_features)
         self.inputs = (u_features, v_features)
 
         self.u_features_nonzero = u_features_nonzero
@@ -162,19 +164,20 @@ class RecommenderSideInfoGAE(nn.Module):
         self._build()
 
         # standard settings: beta1=0.9, beta2=0.999, epsilon=1.e-8
-        self.optimizer = optim.Adam(self.parameters(), lr=self.learning_rate, betas=(0.9, 0.999), eps=1.e-8)
+        #self.optimizer = optim.Adam([p for l in self.layers for p in l.parameters()], 
+        #                            lr=self.learning_rate, betas=(0.9, 0.999), eps=1.e-8)
 
         moving_average_decay = 0.995
 
 
-    def _loss(self):
-        return softmax_cross_entropy(self.outputs, self.labels)
+    def _loss(self, outputs, labels):
+        return softmax_cross_entropy(outputs, labels)
 
-    def _accuracy(self):
-        return softmax_accuracy(self.outputs, self.labels)
+    def _accuracy(self, outputs, labels):
+        return softmax_accuracy(outputs, labels)
 
-    def _rmse(self):
-        return expected_rmse(self.outputs, self.labels, self.class_values)
+    def _rmse(self, outputs, labels):
+        return expected_rmse(outputs, labels, self.class_values)
 
     def _build(self):
         if self.accum == 'sum':
@@ -227,6 +230,15 @@ class RecommenderSideInfoGAE(nn.Module):
                                            num_weights=self.num_basis_functions,
                                            diagonal=False))
 
+    def csr_to_tensor(self, data):
+        samples = data.shape[0]
+        features = data.shape[1]
+        values = data.data
+        coo_data = data.tocoo()
+        indices = torch.LongTensor([coo_data.row, coo_data.col])
+        t = torch.sparse.FloatTensor(indices, torch.from_numpy(values).float(), [samples,features])
+        return t
+
     def forward(self, support, support_t, labels, user_indices, item_indices, u_features_side, v_features_side):
 
         # gcn layer
@@ -235,7 +247,7 @@ class RecommenderSideInfoGAE(nn.Module):
 
         # dense layer for features
         layer = self.layers[1]
-        feat_hidden = layer([self.u_features_side, self.v_features_side])
+        feat_hidden = layer([u_features_side, v_features_side])
 
         # concat dense layer
         layer = self.layers[2]
@@ -258,13 +270,14 @@ class RecommenderSideInfoGAE(nn.Module):
         #    self.activations.append(hidden)
         #self.outputs = self.activations[-1]
         layer = self.layers[3]
-        hidden = layer(self.activations[-1], user_indices, item_indices)
-
-        outputs = self.activations[-1]
+        outputs = layer(self.activations[-1], user_indices, item_indices)
 
         # Build metrics
         loss = self._loss(outputs, labels)
         accuracy = self._accuracy(outputs, labels)
-        rmse = self._rmse(outputs, labels, self.class_values)
+        rmse = self._rmse(outputs, labels)
 
         #self.optimizer.minimize(self.loss, global_step=self.global_step)
+
+        return accuracy, loss, rmse
+

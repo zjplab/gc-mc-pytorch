@@ -44,7 +44,7 @@ def dropout_sparse(x, keep_prob, num_nonzero_elems):
 	"""
 	noise_shape = [num_nonzero_elems]
 	random_tensor = keep_prob
-	random_tensor += tf.random_uniform(noise_shape)
+	random_tensor += Parameter(torch.randn(noise_shape))#tf.random_uniform(noise_shape)
 	dropout_mask = tf.cast(tf.floor(random_tensor), dtype=tf.bool)
 	pre_out = tf.sparse_retain(x, dropout_mask)
 
@@ -130,18 +130,19 @@ class StackGCN(nn.Module):
 		x_u = inputs[0]
 		x_v = inputs[1]
 
+		'''
 		if self.sparse_inputs:
 			x_u = dropout_sparse(x_u, 1 - self.dropout, self.u_features_nonzero)
 			x_v = dropout_sparse(x_v, 1 - self.dropout, self.v_features_nonzero)
 		else:
 			x_u = F.dropout(x_u, 1 - self.dropout)
 			x_v = F.dropout(x_v, 1 - self.dropout)
+		'''
 
 		supports_u = []
 		supports_v = []
 
-		print(support.size())
-		for i in range(support.size(0)):
+		for i in range(len(support)):
 			tmp_u = dot(x_u, self.weights_u[i], sparse=self.sparse_inputs)
 			tmp_v = dot(x_v, self.weights_v[i], sparse=self.sparse_inputs)
 
@@ -221,12 +222,14 @@ class OrdinalMixtureGCN(nn.Module):
 
 	def forward(self, inputs, support, support_t):
 
+		'''
 		if self.sparse_inputs:
 			x_u = dropout_sparse(inputs[0], 1 - self.dropout, self.u_features_nonzero)
 			x_v = dropout_sparse(inputs[1], 1 - self.dropout, self.v_features_nonzero)
 		else:
 			x_u = F.dropout(inputs[0], 1 - self.dropout)
 			x_v = F.dropout(inputs[1], 1 - self.dropout)
+		'''
 
 		supports_u = []
 		supports_v = []
@@ -315,12 +318,12 @@ class BilinearMixture(nn.Module):
 		u_inputs = F.dropout(inputs[0], 1 - self.dropout)
 		v_inputs = F.dropout(inputs[1], 1 - self.dropout)
 
-		u_inputs = torch.gather(u_inputs, u_indices)
-		v_inputs = torch.gather(v_inputs, v_indices)
+		u_inputs = torch.index_select(u_inputs, 0, u_indices)
+		v_inputs = torch.index_select(v_inputs, 0, v_indices)
 
 		if self.user_item_bias:
-			u_bias = torch.gather(self.user_bias, u_indices)
-			v_bias = torch.gather(self.item_bias, v_indices)
+			u_bias = torch.index_select(self.user_bias, 0, u_indices)
+			v_bias = torch.index_select(self.item_bias, 0, v_indices)
 		else:
 			u_bias = None
 			v_bias = None
@@ -336,7 +339,7 @@ class BilinearMixture(nn.Module):
 		# Store outputs in (Nu x Nv) x num_classes tensor and apply activation function
 		basis_outputs = torch.stack(basis_outputs, dim=1)
 
-		outputs = torch.mm(basis_outputs,  self.weights_scalars, transpose_b=False)
+		outputs = torch.mm(basis_outputs,  self.weights_scalars)
 
 		if self.user_item_bias:
 			outputs += u_bias

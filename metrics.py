@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 
 def softmax_accuracy(preds, labels):
@@ -8,10 +9,8 @@ def softmax_accuracy(preds, labels):
     :param labels: ground truth labelt
     :return: average accuracy
     """
-    print(preds.size(), preds.type())
-    correct_prediction = tf.equal(tf.argmax(preds, 1), tf.to_int64(labels))
-    accuracy_all = tf.cast(correct_prediction, tf.float32)
-    return tf.reduce_mean(accuracy_all)
+    correct_prediction = torch.eq(torch.max(preds, 1)[1], labels)
+    return torch.mean(correct_prediction.float())
 
 
 def expected_rmse(logits, labels, class_values=None):
@@ -25,21 +24,21 @@ def expected_rmse(logits, labels, class_values=None):
     :return: rmse
     """
 
-    probs = tf.nn.softmax(logits)
+    probs = F.softmax(logits)
     if class_values is None:
-        scores = tf.to_float(tf.range(start=0, limit=logits.get_shape()[1]) + 1)
-        y = tf.to_float(labels) + 1.  # assumes class values are 1, ..., num_classes
+        #scores = tf.to_float(tf.range(start=0, limit=logits.get_shape()[1]) + 1)
+        scores = torch.range(start=0, end=logits.size(1)).float() + 1.
+        y = labels.float() + 1.  # assumes class values are 1, ..., num_classes
     else:
         scores = class_values
-        y = tf.gather(class_values, labels)
+        y = torch.index_select(class_values, 0, labels)
 
-    pred_y = tf.reduce_sum(probs * scores, 1)
+    pred_y = torch.sum(probs * scores, 1)
 
-    diff = tf.subtract(y, pred_y)
-    exp_rmse = tf.square(diff)
-    exp_rmse = tf.cast(exp_rmse, dtype=tf.float32)
+    diff = torch.sub(y, pred_y)
+    exp_rmse = torch.pow(diff, 2)
 
-    return tf.sqrt(tf.reduce_mean(exp_rmse))
+    return torch.sqrt(torch.mean(exp_rmse))
 
 
 def rmse(logits, labels, class_values=None):
@@ -70,5 +69,5 @@ def rmse(logits, labels, class_values=None):
 def softmax_cross_entropy(outputs, labels):
     """ computes average softmax cross entropy """
 
-    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=outputs, labels=labels)
-    return tf.reduce_mean(loss)
+    loss = F.cross_entropy(input=outputs, target=labels, reduction='mean')
+    return loss
