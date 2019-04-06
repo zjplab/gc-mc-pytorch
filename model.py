@@ -126,6 +126,7 @@ class RecommenderSideInfoGAE(nn.Module):
 
         u_features = self.csr_to_tensor(u_features)
         v_features = self.csr_to_tensor(v_features)
+        u_features.requires_grad=False; v_features.requires_grad=False
         self.inputs = (u_features, v_features)
 
         self.u_features_nonzero = u_features_nonzero

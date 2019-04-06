@@ -79,11 +79,11 @@ class Dense(nn.Module):
 
 	def forward(self, inputs):
 		x_u = inputs[0]
-		x_u = F.dropout(x_u, 1 - self.dropout)
+		x_u = F.dropout(x_u, self.dropout)
 		x_u = torch.mm(x_u, self.weights_u)
 
 		x_v = inputs[1]
-		x_v = F.dropout(x_v, 1 - self.dropout)
+		x_v = F.dropout(x_v, self.dropout)
 		x_v = torch.mm(x_v, self.weights_v)
 
 		u_outputs = self.act(x_u)
@@ -129,14 +129,14 @@ class StackGCN(nn.Module):
 	def forward(self, inputs, support, support_transpose):
 		x_u = inputs[0]
 		x_v = inputs[1]
-
+		
 		'''
 		if self.sparse_inputs:
 			x_u = dropout_sparse(x_u, 1 - self.dropout, self.u_features_nonzero)
 			x_v = dropout_sparse(x_v, 1 - self.dropout, self.v_features_nonzero)
 		else:
-			x_u = F.dropout(x_u, 1 - self.dropout)
-			x_v = F.dropout(x_v, 1 - self.dropout)
+			x_u = F.dropout(x_u, self.dropout)
+			x_v = F.dropout(x_v, self.dropout)
 		'''
 
 		supports_u = []
@@ -227,8 +227,8 @@ class OrdinalMixtureGCN(nn.Module):
 			x_u = dropout_sparse(inputs[0], 1 - self.dropout, self.u_features_nonzero)
 			x_v = dropout_sparse(inputs[1], 1 - self.dropout, self.v_features_nonzero)
 		else:
-			x_u = F.dropout(inputs[0], 1 - self.dropout)
-			x_v = F.dropout(inputs[1], 1 - self.dropout)
+			x_u = F.dropout(inputs[0], self.dropout)
+			x_v = F.dropout(inputs[1], self.dropout)
 		'''
 
 		supports_u = []
@@ -315,8 +315,8 @@ class BilinearMixture(nn.Module):
 
 	def forward(self, inputs, u_indices, v_indices):
 
-		u_inputs = F.dropout(inputs[0], 1 - self.dropout)
-		v_inputs = F.dropout(inputs[1], 1 - self.dropout)
+		u_inputs = F.dropout(inputs[0], self.dropout)
+		v_inputs = F.dropout(inputs[1], self.dropout)
 
 		u_inputs = torch.index_select(u_inputs, 0, u_indices)
 		v_inputs = torch.index_select(v_inputs, 0, v_indices)
