@@ -4,7 +4,7 @@ import scipy.sparse as sp
 import random
 import torch
 # For automatic dataset downloading
-from urllib2 import urlopen
+from urllib.request import urlopen
 from zipfile import ZipFile
 from StringIO import StringIO
 import os.path
