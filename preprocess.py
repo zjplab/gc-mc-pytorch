@@ -9,6 +9,7 @@ from zipfile import ZipFile
 from io import StringIO
 import os.path
 from os import rename, system
+import argparse
 
 def download_dataset(dataset:str):
     """ Downloads dataset if files are not present. 
@@ -185,3 +186,9 @@ def preprocess(dataset):
         torch.save(torch.from_numpy(v_features), './data/ml_100k/v_features.pkl')
 
 
+parser = argparse.ArgumentParser()
+# data
+parser.add_argument('--data_type', type=str, default="ml_100k")
+args = parser.parse_args()
+download_dataset(args.data_type)
+preprocess(args.data_type)

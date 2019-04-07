@@ -13,9 +13,6 @@ from utils import *
 
 def get_loader(data_type:str):
 	"""Builds and returns Dataloader."""
-	os.system("mkdir ./data")
-	download_dataset(data_type)
-	preprocss(data_type)
 	SYM = True
 	DATASET = data_type
 	datasplit_path = 'data/' + DATASET + '/withfeatures.pickle'
