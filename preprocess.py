@@ -6,7 +6,7 @@ import torch
 # For automatic dataset downloading
 from urllib.request import urlopen
 from zipfile import ZipFile
-from StringIO import StringIO
+from io import StringIO
 import os.path
 from os import rename, system
 
