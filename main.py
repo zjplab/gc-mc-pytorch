@@ -159,7 +159,7 @@ def predict():
     return mhat
 
 if __name__ == '__main__':
-    dataset=
+    dataset=args.data_type
     if args.mode == 'train':
         train()
     elif args.mode == 'test':
