@@ -158,12 +158,12 @@ def predict():
         _,_,_, mhat = model.predict(u, v, rating_train)
     return mhat
 
-if __name__ == '__main__':
-    dataset=args.data_type
-    if args.mode == 'train':
-        train()
-    elif args.mode == 'test':
-        best_epoch = args.test_epoch
-    test()
-    mhat=predict()
-    torch.save(mhat, 'mhat.pt')
+#main()
+dataset=args.data_type
+if args.mode == 'train':
+    train()
+elif args.mode == 'test':
+    best_epoch = args.test_epoch
+test()
+mhat=predict()
+torch.save(mhat, 'mhat.pt')
