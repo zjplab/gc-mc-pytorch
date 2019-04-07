@@ -39,9 +39,9 @@ parser.add_argument('--emb-dim', type=int, default=32)
 parser.add_argument('--hidden', default=[64,32,16, 8])
 parser.add_argument('--nb', type=int, default=2)
 
-parser.add_argument('--train-path', '-train',type=str, default='./data/rating_train.pkl')#train.pkl')
-parser.add_argument('--val-path','-val', type=str, default='./data/rating_val.pkl')#val.pkl')
-parser.add_argument('--test-path', '-test',type=str, default='./data/rating_test.pkl')#test.pkl')
+parser.add_argument('--train-path', '-train',type=str, default='/rating_0.pkl')#train.pkl')
+parser.add_argument('--val-path','-val', type=str, default='/rating_1.pkl')#val.pkl')
+parser.add_argument('--test-path', '-test',type=str, default='/rating_2.pkl')#test.pkl')
 
 args = parser.parse_args()
 
@@ -56,9 +56,9 @@ u_features = torch.from_numpy(u_features).to(device).float()
 v_features = torch.from_numpy(v_features).to(device).float()
 u_features_side = torch.from_numpy(u_features_side).to(device)
 v_features_side = torch.from_numpy(v_features_side).to(device)
-rating_train = torch.load(args.train_path).to(device)
-rating_val = torch.load(args.val_path).to(device)
-rating_test = torch.load(args.test_path).to(device)
+rating_train = torch.load('./data/'+args.data_type+args.train_path).to(device)
+rating_val = torch.load('./data/'+args.data_type+args.val_path).to(device)
+rating_test = torch.load('./data/'+args.data_type+args.test_path).to(device)
 
 # Creating the architecture of the Neural Network
 model = GAE(num_users, num_items, num_classes,
