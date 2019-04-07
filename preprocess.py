@@ -6,7 +6,7 @@ import torch
 # For automatic dataset downloading
 from urllib.request import urlopen
 from zipfile import ZipFile
-from io import StringIO
+from io import StringIO, BytesIO
 import os.path
 from os import rename, system
 import argparse
@@ -33,7 +33,7 @@ def download_dataset(dataset:str):
         else:
             raise ValueError('Invalid dataset option %s' % dataset)
 
-        with ZipFile(StringIO(request.read())) as zip_ref:
+        with ZipFile(BytesIO(request.read())) as zip_ref:
             zip_ref.extractall('data/')
         rename("./data/"+dataset.replace('_', '-'), target_dir)
 
