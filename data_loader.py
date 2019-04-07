@@ -8,11 +8,14 @@ import pandas as pd
 import scipy.sparse as sp
 import torch
 from torch.utils import data
-
+from preprocess import download_dataset, preprocess
 from utils import *
 
-def get_loader(data_type):
+def get_loader(data_type:str):
 	"""Builds and returns Dataloader."""
+	os.system("mkdir ./data")
+	download_dataset(data_type, "./data/"+data_type)
+	preprocss(data_type)
 	SYM = True
 	DATASET = data_type
 	datasplit_path = 'data/' + DATASET + '/withfeatures.pickle'
