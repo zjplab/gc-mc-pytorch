@@ -39,9 +39,9 @@ parser.add_argument('--emb-dim', type=int, default=32)
 parser.add_argument('--hidden', default=[64,32,16, 8])
 parser.add_argument('--nb', type=int, default=2)
 
-parser.add_argument('--train-path', type=str, default='./data/rating_train.pkl')#train.pkl')
-parser.add_argument('--val-path', type=str, default='./data/rating_val.pkl')#val.pkl')
-parser.add_argument('--test-path', type=str, default='./data/rating_test.pkl')#test.pkl')
+parser.add_argument('--train-path', '-train',type=str, default='./data/rating_train.pkl')#train.pkl')
+parser.add_argument('--val-path','-val', type=str, default='./data/rating_val.pkl')#val.pkl')
+parser.add_argument('--test-path', '-test',type=str, default='./data/rating_test.pkl')#test.pkl')
 
 args = parser.parse_args()
 
