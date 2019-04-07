@@ -10,7 +10,7 @@ from io import StringIO
 import os.path
 from os import rename, system
 
-def download_dataset(dataset, data_dir):
+def download_dataset(dataset:str, data_dir=None):
     """ Downloads dataset if files are not present. 
     -----
     dataset: ml_100k | ml_1m | ml_10m(not recommended)
@@ -19,6 +19,7 @@ def download_dataset(dataset, data_dir):
     dict={"ml_100k":['/u.data', '/u.item', '/u.user'], \
         'ml_1m':['/ratings.dat', '/movies.dat', '/users.dat']}
     files=dict[dataset]
+    data_dir="./data/"+dataset
     if not np.all([os.path.isfile(data_dir + f) for f in files]):
         url = "http://files.grouplens.org/datasets/movielens/" + dataset.replace('_', '-') + '.zip'
         request = urlopen(url)
