@@ -166,4 +166,4 @@ if __name__ == '__main__':
         best_epoch = args.test_epoch
     test()
     mhat=predict()
-    pickle(mhat.numpy(), "./data/mhat.pkl")
+    pickle(mhat..cpu().numpy(), "./data/mhat.pkl")
