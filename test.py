@@ -1,17 +1,5 @@
 import argparse
-# Importing the libraries
-import os
-import numpy as np
-import pandas as pd
-from random import sample
-import torch
-import torch.nn as nn
-import torch.nn.parallel
-import torch.optim as optim
-from torch.autograd import Variable
-from torch.utils.data import BatchSampler, SequentialSampler
-import pickle
-from model import *
+import data_loader
 #from data_loader import get_loader
 
 parser = argparse.ArgumentParser()

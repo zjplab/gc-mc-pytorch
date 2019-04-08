@@ -9,7 +9,8 @@ import scipy.sparse as sp
 import torch
 from torch.utils import data
 from preprocess import download_dataset, preprocess
-from utils import *
+from utils import create_trainvaltest_split, normalize_features, preprocess_user_item_features
+
 
 def get_loader(data_type:str):
 	"""Builds and returns Dataloader."""
