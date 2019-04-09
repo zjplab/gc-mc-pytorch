@@ -1,6 +1,5 @@
 import argparse
-import data_loader
-#from data_loader import get_loader
+from data_loader import get_loader
 
 parser = argparse.ArgumentParser()
 # data
