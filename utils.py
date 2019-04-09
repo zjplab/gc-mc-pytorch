@@ -7,7 +7,8 @@ import pandas as pd
 import numpy as np
 import scipy.sparse as sp
 import pickle as pkl
-
+from os import rename, system
+from preprocess import download_dataset
 
 def normalize_features(feat):
 
@@ -93,30 +94,6 @@ def map_data(data):
     return data, id_dict, n
 
 
-def download_dataset(dataset, files, data_dir):
-    """ Downloads dataset if files are not present. """
-
-    if not np.all([os.path.isfile(data_dir + f) for f in files]):
-        url = "http://files.grouplens.org/datasets/movielens/" + dataset.replace('_', '-') + '.zip'
-        request = urlopen(url)
-
-        print('Downloading %s dataset' % dataset)
-        if dataset in ['ml_100k', 'ml_1m']:
-            target_dir = 'data/' + dataset.replace('_', '-')
-        elif dataset == 'ml_10m':
-            target_dir = 'data/' + 'ml-10M100K'
-        else:
-            raise ValueError('Invalid dataset option %s' % dataset)
-
-        with ZipFile(StringIO(request.read())) as zip_ref:
-            zip_ref.extractall('data/')
-
-        source = [target_dir + '/' + s for s in os.listdir(target_dir)]
-        destination = data_dir+'/'
-        for f in source:
-            shutil.copy(f, destination)
-
-        shutil.rmtree(target_dir)
 
 
 def sparse_to_tuple(sparse_mx):
@@ -173,7 +150,7 @@ def load_data(fname, seed=1234, verbose=True):
         # Check if files exist and download otherwise
         files = ['/u.data', '/u.item', '/u.user']
 
-        download_dataset(fname, files, data_dir)
+        download_dataset(fname)
 
         sep = '\t'
         filename = data_dir + files[0]
@@ -256,7 +233,7 @@ def load_data(fname, seed=1234, verbose=True):
 
         # Check if files exist and download otherwise
         files = ['/ratings.dat', '/movies.dat', '/users.dat']
-        download_dataset(fname, files, data_dir)
+        download_dataset(fname)
 
         sep = r'\:\:'
         filename = data_dir + files[0]
@@ -346,7 +323,7 @@ def load_data(fname, seed=1234, verbose=True):
 
         # Check if files exist and download otherwise
         files = ['/ratings.dat']
-        download_dataset(fname, files, data_dir)
+        download_dataset(fname)
 
         sep = r'\:\:'
 
