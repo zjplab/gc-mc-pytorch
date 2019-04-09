@@ -13,6 +13,7 @@ from torch.utils.data import BatchSampler, SequentialSampler
 import pickle
 from model import *
 import data_loader
+from preprocess import preprocess
 
 parser = argparse.ArgumentParser()
 # data
@@ -44,41 +45,6 @@ parser.add_argument('--test_path', '-test',type=str, default='/rating_2.pkl')#te
 args = parser.parse_args()
 
 
-
-
-############
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# Load the datas
-num_users, num_items, num_classes, num_side_features, num_features,\
-u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type)
-
-u_features = torch.from_numpy(u_features).to(device).float()
-v_features = torch.from_numpy(v_features).to(device).float()
-u_features_side = torch.from_numpy(u_features_side).to(device)
-v_features_side = torch.from_numpy(v_features_side).to(device)
-rating_train = torch.load('./data/'+args.data_type+args.train_path).to(device)
-rating_val = torch.load('./data/'+args.data_type+args.val_path).to(device)
-rating_test = torch.load('./data/'+args.data_type+args.test_path).to(device)
-
-# Creating the architecture of the Neural Network
-model = GAE(num_users, num_items, num_classes,
-            num_side_features, args.nb,
-            u_features, v_features, u_features_side, v_features_side,
-            num_users+num_items, args.emb_dim, args.hidden, args.dropout)
-if torch.cuda.is_available():
-    model.cuda()
-"""Print out the network information."""
-num_params = 0
-for p in model.parameters():
-    num_params += p.numel()
-print(model)
-print("The number of parameters: {}".format(num_params))
-
-optimizer = optim.Adam(model.parameters(), lr = args.lr, betas=[args.beta1, args.beta2])
-
-best_epoch = 0
-best_loss  = 9999.
 
 def reset_grad():
     """Reset the gradient buffers."""
@@ -161,10 +127,43 @@ def predict():
 
 #main()
 dataset=args.data_type
+############
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# Load the datas
+num_users, num_items, num_classes, num_side_features, num_features,\
+u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type)
+preprocess(dataset)
+u_features = torch.from_numpy(u_features).to(device).float()
+v_features = torch.from_numpy(v_features).to(device).float()
+u_features_side = torch.from_numpy(u_features_side).to(device)
+v_features_side = torch.from_numpy(v_features_side).to(device)
+rating_train = torch.load('./data/'+args.data_type+args.train_path).to(device)
+rating_val = torch.load('./data/'+args.data_type+args.val_path).to(device)
+rating_test = torch.load('./data/'+args.data_type+args.test_path).to(device)
+
+# Creating the architecture of the Neural Network
+model = GAE(num_users, num_items, num_classes,
+            num_side_features, args.nb,
+            u_features, v_features, u_features_side, v_features_side,
+            num_users+num_items, args.emb_dim, args.hidden, args.dropout)
+if torch.cuda.is_available():
+    model.cuda()
+"""Print out the network information."""
+num_params = 0
+for p in model.parameters():
+    num_params += p.numel()
+print(model)
+print("The number of parameters: {}".format(num_params))
+
+optimizer = optim.Adam(model.parameters(), lr = args.lr, betas=[args.beta1, args.beta2])
+
+best_epoch = 0
+best_loss  = 9999.
 if args.mode == 'train':
     train()
 elif args.mode == 'test':
     best_epoch = args.test_epoch
-test()
+    test()
 mhat=predict()
 torch.save(mhat, 'mhat.pt')
