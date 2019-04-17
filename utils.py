@@ -9,6 +9,7 @@ import scipy.sparse as sp
 import pickle as pkl
 from os import rename, system
 from preprocess import download_dataset
+import torch
 
 def normalize_features(feat):
 
@@ -388,10 +389,11 @@ def create_trainvaltest_split(dataset, seed=1234, testing=False, datasplit_path=
     else:
         num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features = load_data(dataset, seed=seed,
                                                                                             verbose=verbose)
-
-        with open(datasplit_path, 'wb') as f:
-            pkl.dump([num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features], f)
-
+        try:
+            with open(datasplit_path, 'wb') as f:
+                pkl.dump([num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features], f)
+        except:
+            print("Dumping Error")
     neutral_rating = -1
 
     rating_dict = {r: i for i, r in enumerate(np.sort(np.unique(ratings)).tolist())}
@@ -413,14 +415,17 @@ def create_trainvaltest_split(dataset, seed=1234, testing=False, datasplit_path=
 
     idx_nonzero = np.array([u * num_items + v for u, v in pairs_nonzero])
 
+#1-dim index
     train_idx = idx_nonzero[0:num_train]
     val_idx = idx_nonzero[num_train:num_train + num_val]
     test_idx = idx_nonzero[num_train + num_val:]
 
+#shape=(N, 2)
     train_pairs_idx = pairs_nonzero[0:num_train]
     val_pairs_idx = pairs_nonzero[num_train:num_train + num_val]
     test_pairs_idx = pairs_nonzero[num_train + num_val:]
 
+#shape=(2,N)
     u_test_idx, v_test_idx = test_pairs_idx.transpose()
     u_val_idx, v_val_idx = val_pairs_idx.transpose()
     u_train_idx, v_train_idx = train_pairs_idx.transpose()
@@ -443,6 +448,18 @@ def create_trainvaltest_split(dataset, seed=1234, testing=False, datasplit_path=
     rating_mx_train = sp.csr_matrix(rating_mx_train.reshape(num_users, num_items))
 
     class_values = np.sort(np.unique(ratings))
+
+    #create 3 torch tensors and then dump them 
+    for i, pair in enumerate([(u_train_idx, v_train_idx), (u_val_idx, v_val_idx), \
+        (u_test_idx, v_test_idx) ]):
+        if not os.path.exists("./data/"+dataset+'/rating_%d.pkl'%i):
+                #create a 3 dim torch tensor for ratings
+                rating_mtx = torch.zeros(len(rating_dict), num_users, num_items)
+                for index, (u, v) in enumerate(zip(pair[0], pair[1])):
+                    index_mapping={0:train_idx, 1:val_idx, 2:test_idx}
+                    r = labels[ index_mapping[i][index]] #index to corresponding elem in labels                    
+                    rating_mtx[r, u, v] = 1
+                torch.save(rating_mtx, "./data/"+dataset+'/rating_%d.pkl'%i)
 
     return u_features, v_features, rating_mx_train, train_labels, u_train_idx, v_train_idx, \
         val_labels, u_val_idx, v_val_idx, test_labels, u_test_idx, v_test_idx, class_values

@@ -133,10 +133,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load the datas
 num_users, num_items, num_classes, num_side_features, num_features,\
 u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type)
-preprocess(dataset)
+# preprocess(dataset)
 u_features = torch.from_numpy(u_features).to(device).float()
 v_features = torch.from_numpy(v_features).to(device).float()
-u_features_side = torch.from_numpy(u_features_side).to(device)
+u_features_side = torch.from_numpy(u_features_side).to(device) #u_features_side means normalized
 v_features_side = torch.from_numpy(v_features_side).to(device)
 rating_train = torch.load('./data/'+args.data_type+args.train_path).to(device)
 rating_val = torch.load('./data/'+args.data_type+args.val_path).to(device)

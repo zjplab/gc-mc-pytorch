@@ -10,6 +10,7 @@ from io import StringIO, BytesIO
 import os.path
 from os import rename, system
 import argparse
+import pickle as pkl
 
 def download_dataset(dataset:str):
     """ Downloads dataset if files are not present. 
@@ -36,7 +37,8 @@ def download_dataset(dataset:str):
         with ZipFile(BytesIO(request.read())) as zip_ref:
             zip_ref.extractall('data/')
         rename("./data/"+dataset.replace('_', '-'), target_dir)
-
+def preprocess_v2(dataset):
+    pass
 
 def preprocess(dataset):
     if dataset=="ml_1m":
@@ -185,10 +187,4 @@ def preprocess(dataset):
             v_features[movie_id-1] = g_vec
         torch.save(torch.from_numpy(v_features), './data/ml_100k/v_features.pkl')
 
-""" 
-parser = argparse.ArgumentParser()
-# data
-parser.add_argument('--data_type', type=str, default="ml_100k")
-args = parser.parse_args()
-download_dataset(args.data_type)
-preprocess(args.data_type) """
+
