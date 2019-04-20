@@ -133,6 +133,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load the datas
 num_users, num_items, num_classes, num_side_features, num_features,\
 u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type)
+# 
 # preprocess(dataset)
 u_features = torch.from_numpy(u_features).to(device).float()
 v_features = torch.from_numpy(v_features).to(device).float()
@@ -166,4 +167,4 @@ elif args.mode == 'test':
     best_epoch = args.test_epoch
     test()
 mhat=predict()
-torch.save(mhat, 'mhat.pt')
+torch.save(mhat, dataset+'_mhat.pt')
