@@ -351,7 +351,7 @@ def load_data(fname, seed=1234, verbose=True):
 
         u_nodes_ratings, u_dict, num_users = map_data(u_nodes_ratings)
         v_nodes_ratings, v_dict, num_items = map_data(v_nodes_ratings)
-
+        
         u_nodes_ratings, v_nodes_ratings = u_nodes_ratings.astype(np.int64), v_nodes_ratings.astype(np.int64)
         ratings = ratings.astype(np.float32)
 
@@ -363,6 +363,12 @@ def load_data(fname, seed=1234, verbose=True):
         print('Number of items = %d' % num_items)
         print('Number of links = %d' % ratings.shape[0])
         print('Fraction of positive links = %.4f' % (float(ratings.shape[0]) / (num_users * num_items),))
+    #dump u, v dict
+    try:
+        with open("./data/"+fname+'/uv_dict.pkl','wb') as f:
+            pkl.dump([u_dict, v_dict], f)
+    except:
+        print("U,V dicts Dumping Error")
 
     return num_users, num_items, u_nodes_ratings, v_nodes_ratings, ratings, u_features, v_features
 
@@ -400,6 +406,13 @@ def create_trainvaltest_split(dataset, seed=1234, testing=False, datasplit_path=
 
     labels = np.full((num_users, num_items), neutral_rating, dtype=np.int32)
     labels[u_nodes, v_nodes] = np.array([rating_dict[r] for r in ratings])
+    #full rating dump
+    try:
+        with open("./data/"+dataset+'/full_rating.pkl','wb') as f:
+            pkl.dump(labels, f)
+    except:
+        print("Full Ratings Dumping Error")
+
     labels = labels.reshape([-1])
 
     # number of test and validation edges
