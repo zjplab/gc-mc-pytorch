@@ -41,6 +41,11 @@ class GAE(nn.Module):
 
     def forward(self, u, v, r_matrix):
         '''
+        Input:
+        u: u number
+        v: v numebr
+
+        
         Returns:
         - output:raw output
         - loss
