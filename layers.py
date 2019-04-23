@@ -28,7 +28,7 @@ class GraphConvolution(Module):
             self.v_bias = None
 
         for w in [self.u_weight, self.v_weight]:
-            nn.init.xavier_normal_(w)
+            nn.init.kaiming_normal_(w)
 
     def normalize(self, mx):
         """Row-normalize sparse matrix"""
@@ -95,7 +95,7 @@ class BilinearMixture(Module):
         self.v_bias = Parameter(torch.randn(num_items, num_classes))
 
         for w in [self.weight, self.a, self.u_bias, self.v_bias]:
-            nn.init.xavier_normal_(w)
+            nn.init.kaiming_normal_(w)
 
     def forward(self, u_hidden, v_hidden, u, v):
 
