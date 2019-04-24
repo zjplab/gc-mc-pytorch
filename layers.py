@@ -26,7 +26,7 @@ class GraphConvolution(Module):
         else:
             self.u_bias = None
             self.v_bias = None
-1
+
         for w in [self.u_weight, self.v_weight]:
             nn.init.kaiming_normal_(w)
 
