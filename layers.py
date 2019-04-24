@@ -26,7 +26,7 @@ class GraphConvolution(Module):
         else:
             self.u_bias = None
             self.v_bias = None
-
+1
         for w in [self.u_weight, self.v_weight]:
             nn.init.kaiming_normal_(w)
 
@@ -75,10 +75,10 @@ class GraphConvolution(Module):
             support_norm = self.normalize(support[r])
             support_norm_t = self.normalize(support[r].t())
             # then multiply with rating matrices
-            supports_u.append(torch.mm(support_norm, tmp_u))
-            supports_v.append(torch.mm(support_norm_t, tmp_v))
-            #supports_u.append(torch.mm(support_norm[u], tmp_u))
-            #supports_v.append(torch.mm(support_norm_t[v], tmp_v))
+            supports_u.append(torch.mm(support_norm, tmp_v))
+            supports_v.append(torch.mm(support_norm_t, tmp_u))
+            #supports_u.append(torch.mm(support_norm[u], tmp_v))
+            #supports_v.append(torch.mm(support_norm_t[v], tmp_u))
 
         z_u = torch.sum(torch.stack(supports_u, 0), 0)
         z_v = torch.sum(torch.stack(supports_v, 0), 0)
