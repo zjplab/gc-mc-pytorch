@@ -111,4 +111,4 @@ class GAE(nn.Module):
         loss = softmax_cross_entropy(output, r_mx.float())
         rmse_loss = rmse(m_hat, r_mx.float())
 
-        return output, loss, rmse_loss, mhat
+        return output, loss, rmse_loss, m_hat
