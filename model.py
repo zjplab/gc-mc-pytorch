@@ -63,7 +63,10 @@ class GAE(nn.Module):
         """u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
         v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout)) """
         #debug
-        print(u_z.size(), u_f.size(), v_z.size(), v_f.size())
+        print(u_z.size(), self.weight_u.size(), \
+            u_f.size(), self.weight2_u.size(), \
+                 v_z.size(),self.weight_v.size(),\
+                      v_f.size(), self.weight2_v.size())
         u_h=torch.relu( torch.mm(F.dropout(u_z,p=self.dropout), self.weight_u ) + \
             torch.mm(F.dropout(u_f, p=self.dropout), self.weight2_u) )
         v_h=torch.relu(torch.mm( F.dropout(v_z, p=self.dropout), self.weight_v) + \
