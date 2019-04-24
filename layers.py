@@ -21,8 +21,8 @@ class GraphConvolution(Module):
         self.v_weight = self.u_weight
         if bias:
             self.u_bias = Parameter(torch.randn(hidden_dim))
-            #self.v_bias = Parameter(torch.randn(hidden_dim))
-            self.v_bias = self.u_bias
+            self.v_bias = Parameter(torch.randn(hidden_dim))
+            #self.v_bias = self.u_bias
         else:
             self.u_bias = None
             self.v_bias = None
@@ -46,7 +46,12 @@ class GraphConvolution(Module):
         return mx
 
     def forward(self, u_feat, v_feat, u, v, support):
-
+        '''
+        u: # of users
+        v: # of items
+        U_feat=xxx
+        support rating matrix (R, #u, #v)
+        '''
         u_feat = self.dropout(u_feat)
         v_feat = self.dropout(v_feat)
 
@@ -59,8 +64,13 @@ class GraphConvolution(Module):
             v_weight = v_weight + self.v_weight[r]
 
             # multiply feature matrices with weights
-            tmp_u = torch.mm(u_feat, u_weight)
-            tmp_v = torch.mm(v_feat, v_weight)
+            #tmp_u = torch.mm(u_feat, u_weight)
+            #tmp_v = torch.mm(v_feat, v_weight)
+            
+            #because now we use identities to multiply, so use u_feat no\
+            # longer makes sense
+            temp_u=u_weight[:, :u_feat.size(0)]
+            temp_v=v_weight[:, :v_feat.size(0)]
 
             support_norm = self.normalize(support[r])
             support_norm_t = self.normalize(support[r].t())

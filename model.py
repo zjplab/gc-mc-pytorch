@@ -26,17 +26,17 @@ class GAE(nn.Module):
         self.gcl1 = GraphConvolution(input_dim, hidden[0],
                                     num_users, num_items,
                                     num_classes, torch.relu, self.dropout, bias=True)
-        self.gcl2 = GraphConvolution(hidden[0], hidden[1],
+        """ self.gcl2 = GraphConvolution(hidden[0], hidden[1],
                                     num_users, num_items,
-                                    num_classes, torch.relu, self.dropout, bias=True)
+                                    num_classes, torch.relu, self.dropout, bias=True) """
         self.denseu1 = nn.Linear(num_side_features, emb_dim, bias=True)
         self.densev1 = nn.Linear(num_side_features, emb_dim, bias=True)
-        self.denseu2 = nn.Linear(emb_dim + hidden[1], hidden[2], bias=False)
-        self.densev2 = nn.Linear(emb_dim + hidden[1], hidden[2], bias=False)
+        self.denseu2 = nn.Linear(emb_dim + hidden[0], hidden[1], bias=False)
+        self.densev2 = nn.Linear(emb_dim + hidden[0], hidden[1], bias=False)
 
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
                                          num_classes=num_classes,
-                                         input_dim=hidden[2],
+                                         input_dim=hidden[1],
                                          nb=nb, dropout=0.)
 
     def forward(self, u, v, r_matrix):
@@ -49,7 +49,7 @@ class GAE(nn.Module):
         '''
         u_z, v_z = self.gcl1(self.u_features, self.v_features,
                              range(self.num_users), range(self.num_items), r_matrix)
-        u_z, v_z = self.gcl2(u_z, v_z, u, v, r_matrix)
+        #range(self.number) has no use
 
         u_f = torch.relu(self.denseu1(self.u_features_side[u]))
         v_f = torch.relu(self.densev1(self.v_features_side[v]))
@@ -75,7 +75,7 @@ class GAE(nn.Module):
         '''
         u_z, v_z = self.gcl1(self.u_features, self.v_features,
                              range(self.num_users), range(self.num_items), r_matrix)
-        u_z, v_z = self.gcl2(u_z, v_z, u, v, r_matrix)
+        #range(self.number) has no use
 
         u_f = torch.relu(self.denseu1(self.u_features_side[u]))
         v_f = torch.relu(self.densev1(self.v_features_side[v]))
