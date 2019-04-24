@@ -62,10 +62,10 @@ class GAE(nn.Module):
 
         """u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
         v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout)) """
-        u_h=torch.relu( torch.mm(self.weight_u, F.dropout(u_z,p=self.dropout)) + \
-            torch.mm(self.weight2_u, F.dropout(u_f, p=self.dropout)))
-        v_h=torch.relu(torch.mm(self.weight_v, F.dropout(v_z, p=self.dropout) + \
-            torch.mm(self.weight2_v, F.dropout(v_f, p=self.dropout))))
+        u_h=torch.relu( torch.mm(F.dropout(u_z,p=self.dropout), self.weight_u ) + \
+            torch.mm(F.dropout(u_f, p=self.dropout), self.weight2_u) )
+        v_h=torch.relu(torch.mm( F.dropout(v_z, p=self.dropout), self.weight_v) + \
+            torch.mm(F.dropout(v_f, p=self.dropout), self.weight2_v) )
         output, m_hat = self.bilin_dec(u_h, v_h, u, v)
 
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
