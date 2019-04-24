@@ -37,7 +37,7 @@ class GAE(nn.Module):
         self.weight2_u=Parameter(torch.randn(emb_dim, hidden[1]))
         self.weight_u=Parameter(torch.randn(hidden[0], hidden[1]))
         self.weight2_v=Parameter(torch.randn(emb_dim, hidden[1]))
-        self.weight_v=Parameter(torch.randn(emb_dim, hidden[1]))
+        self.weight_v=Parameter(torch.randn(hidden[0], hidden[1]))
         for weight in [self.weight2_u, self.weight_u, self.weight2_v, self.weight_v]:
             nn.init.kaiming_normal_(weight)
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
