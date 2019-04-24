@@ -94,13 +94,21 @@ class GAE(nn.Module):
         u_f = torch.relu(self.denseu1(self.u_features_side[u]))
         v_f = torch.relu(self.densev1(self.v_features_side[v]))
 
-        u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
-        v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout))
-
+        """u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
+        v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout)) """
+        #debug
+        """ print(u_z.size(), self.weight_u.size(), \
+            u_f.size(), self.weight2_u.size(), \
+                 v_z.size(),self.weight_v.size(),\
+                      v_f.size(), self.weight2_v.size()) """
+        u_h=torch.relu( torch.mm(F.dropout(u_z,p=self.dropout), self.weight_u ) + \
+            torch.mm(F.dropout(u_f, p=self.dropout), self.weight2_u) )
+        v_h=torch.relu(torch.mm( F.dropout(v_z, p=self.dropout), self.weight_v) + \
+            torch.mm(F.dropout(v_f, p=self.dropout), self.weight2_v) )
         output, m_hat = self.bilin_dec(u_h, v_h, u, v)
 
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
         loss = softmax_cross_entropy(output, r_mx.float())
         rmse_loss = rmse(m_hat, r_mx.float())
 
-        return output, loss, rmse_loss, m_hat
+        return output, loss, rmse_loss
