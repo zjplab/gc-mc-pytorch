@@ -41,7 +41,7 @@ parser.add_argument('--nb', type=int, default=2)
 parser.add_argument('--train_path', '-train',type=str, default='/rating_0.pkl')#train.pkl')
 parser.add_argument('--val_path','-val', type=str, default='/rating_1.pkl')#val.pkl')
 parser.add_argument('--test_path', '-test',type=str, default='/rating_2.pkl')#test.pkl')
-
+parser.add_argument('--seed',type=int, default=1234)
 args = parser.parse_args()
 
 
@@ -138,7 +138,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the datas
 num_users, num_items, num_classes, num_side_features, num_features,\
-u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type)
+u_features, v_features, u_features_side, v_features_side = data_loader.get_loader(args.data_type, seed=args.seed)
 # 
 # preprocess(dataset)
 u_features = torch.from_numpy(u_features).to(device).float()

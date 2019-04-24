@@ -94,8 +94,7 @@ class GAE(nn.Module):
         u_f = torch.relu(self.denseu1(self.u_features_side[u]))
         v_f = torch.relu(self.densev1(self.v_features_side[v]))
 
-        """u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
-        v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout)) """
+
         #debug
         """ print(u_z.size(), self.weight_u.size(), \
             u_f.size(), self.weight2_u.size(), \

@@ -12,7 +12,7 @@ from preprocess import download_dataset, preprocess
 from utils import create_trainvaltest_split, normalize_features, preprocess_user_item_features
 
 
-def get_loader(data_type:str):
+def get_loader(data_type:str, seed=1234):
 	"""Builds and returns Dataloader."""
 	SYM = True
 	DATASET = data_type
@@ -20,7 +20,7 @@ def get_loader(data_type:str):
 
 	u_features, v_features, adj_train, train_labels, train_u_indices, train_v_indices, \
 		val_labels, val_u_indices, val_v_indices, test_labels, \
-		test_u_indices, test_v_indices, class_values = create_trainvaltest_split(data_type, datasplit_path=datasplit_path)
+		test_u_indices, test_v_indices, class_values = create_trainvaltest_split(data_type, seed=seed,datasplit_path=datasplit_path)
 
 	num_users, num_items = adj_train.shape
 
