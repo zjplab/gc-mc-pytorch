@@ -69,8 +69,8 @@ class GraphConvolution(Module):
             
             #because now we use identities to multiply, so use u_feat no\
             # longer makes sense
-            tmp_u=u_weight[:, :u_feat.size(0)]
-            tmp_v=v_weight[:, :v_feat.size(0)]
+            tmp_u=u_weight[:u_feat.size(0), :u_feat.size(0)]
+            tmp_v=v_weight[:v_feat.size(0), :v_feat.size(0)]
 
             support_norm = self.normalize(support[r])
             support_norm_t = self.normalize(support[r].t())
