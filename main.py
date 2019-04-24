@@ -104,8 +104,12 @@ def train():
 
 def test():
     # Test
-    model.load_state_dict(torch.load(os.path.join(args.model_path,
-                          'model-%d.pkl'%(best_epoch))))
+    if args.best_epoch:
+        model.load_state_dict(torch.load(os.path.join(args.model_path,
+                            'model-%d.pkl'%(best_epoch))))
+    else:
+        name_list=os.listdir(args.model_path)
+        
     model.eval()
     with torch.no_grad():
         u = torch.from_numpy(np.array(range(num_users))).to(device)
