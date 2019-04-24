@@ -31,9 +31,15 @@ class GAE(nn.Module):
                                     num_classes, torch.relu, self.dropout, bias=True) """
         self.denseu1 = nn.Linear(num_side_features, emb_dim, bias=True)
         self.densev1 = nn.Linear(num_side_features, emb_dim, bias=True)
-        self.denseu2 = nn.Linear(emb_dim + hidden[0], hidden[1], bias=False)
+        """         self.denseu2 = nn.Linear(emb_dim + hidden[0], hidden[1], bias=False)
         self.densev2 = nn.Linear(emb_dim + hidden[0], hidden[1], bias=False)
-
+        """    
+        self.weight2_u=Parameter(torch.randn(emb_dim, hidden[1]))
+        self.weight_u=Parameter(torch.randn(hidden[0], hidden[1]))
+        self.weight2_v=Parameter(torch.randn(emb_dim, hidden[1]))
+        self.weight_v=Parameter(torch.randn(emb_dim, hidden[1]))
+        for weight in [self.weight2_u, self.weight_u, self.weight2_v, self.weight_v]:
+            nn.init.kaiming_normal_(w)
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
                                          num_classes=num_classes,
                                          input_dim=hidden[1],
@@ -54,9 +60,12 @@ class GAE(nn.Module):
         u_f = torch.relu(self.denseu1(self.u_features_side[u]))
         v_f = torch.relu(self.densev1(self.v_features_side[v]))
 
-        u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
-        v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout))
-
+        """u_h = self.denseu2(F.dropout(torch.cat((u_z, u_f), 1), self.dropout))
+        v_h = self.densev2(F.dropout(torch.cat((v_z, v_f), 1), self.dropout)) """
+        u_h=torch.relu( torch.mm(self.weight_u, F.dropout(u_z,p=self.dropout)) + \
+            torch.mm(self.weight2_u, F.dropout(u_f, p=self.dropout)))
+        v_h=torch.relu(torch.mm(self.weight_v, F.dropout(v_z, p=self.dropout) + \
+            torch.mm(self.weight2_v, F.dropout(v_f, p=self.dropout))))
         output, m_hat = self.bilin_dec(u_h, v_h, u, v)
 
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
