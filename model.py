@@ -43,7 +43,7 @@ class GAE(nn.Module):
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
                                          num_classes=num_classes,
                                          input_dim=hidden[1],
-                                         nb=nb, dropout=0.)
+                                         nb=nb, dropout=self.dropout)
 
     def forward(self, u, v, r_matrix):
         '''
