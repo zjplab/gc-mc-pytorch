@@ -8,7 +8,7 @@ After downloading [ml_1m](https://grouplens.org/datasets/movielens/) to the ```.
 ## Requirements
 
 
-  * Python 3。7
+  * Python 3.7.1
   * PyTorch 1.0
 
 ## Usage
