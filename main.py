@@ -153,7 +153,7 @@ rating_test = torch.load('./data/'+args.data_type+args.test_path).to(device)
 model = GAE(num_users, num_items, num_classes,
             num_side_features, args.nb,
             u_features, v_features, u_features_side, v_features_side,
-            num_users+num_items, args.emb_dim, args.hidden, args.dropout)
+            num_users+num_items, args.emb_dim, args.hidden, args.dropout, args.encoder_dropout)
 if torch.cuda.is_available():
     model.cuda()
 """Print out the network information."""
