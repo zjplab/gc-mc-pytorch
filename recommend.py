@@ -7,7 +7,7 @@ import itertools
 def recommend(dataset:str, user:int):
     mhat=torch.load("./"+dataset+"_mhat.pt").cpu().numpy()
     with open("./data/"+dataset+"/train_numpy.pkl", "rb") as f:
-        tain=pkl.load(f)
+        train=pkl.load(f)
     with open("./data/"+dataset+"/valid_numpy.pkl", "rb") as f:
         valid=pkl.load(f)
     with open("./data/"+dataset+"/test_numpy.pkl", "rb") as f:
