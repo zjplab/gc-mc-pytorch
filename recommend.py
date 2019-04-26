@@ -13,8 +13,6 @@ def recommend(dataset:str, user:int):
     with open("./data/"+dataset+"/test_numpy.pkl", "rb") as f:
         test=pkl.load(f)
     train=train+valid
-    with open("./data/"+dataset+'/uv_dict.pkl','rb') as f:
-            u_dict, v_dict=pkl.load(f)
     
     if dataset=="ml_100k":
         sep = r'|'
@@ -31,7 +29,7 @@ def recommend(dataset:str, user:int):
         sep = r'\:\:'
         movies_file = "./data/ml_1m/movies.dat"
         movies_headers = ['movie_id', 'title', 'genre']
-        movies_df = pd.read_csv(movies_file, sep=sep, header=None,
+        movie_df = pd.read_csv(movies_file, sep=sep, header=None,
                                 names=movies_headers, engine='python', usecols=["movie_id", "title"])
                                 
     non_zero=np.nonzero(train[user,:])
