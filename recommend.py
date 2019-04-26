@@ -74,7 +74,7 @@ def recommend_metric(dataset:str):
             #f1 score
             try:
                 f_measure+=2*(tmp_precision*tmp_recall)/(tmp_precision + tmp_recall)
-            else:
+            except:
                 f_measure+=1
 
             #discounted cumulative gain
