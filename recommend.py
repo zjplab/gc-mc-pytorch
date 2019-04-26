@@ -34,8 +34,8 @@ def recommend(dataset:str, user:int):
         movies_df = pd.read_csv(movies_file, sep=sep, header=None,
                                 names=movies_headers, engine='python', usecols=["movie_id", "title"])
                                 
-    non_zero=np.nonzero(train[i,:])
-    indices=np.argsort(mhat[i,:])
+    non_zero=np.nonzero(train[user,:])
+    indices=np.argsort(mhat[user,:])
     indices=np.setdiff1d(indices, non_zero, assume_unique=True)
     names=movie_df.title[ indices[-10::-1]]
     for n,name in enumerate(names):
