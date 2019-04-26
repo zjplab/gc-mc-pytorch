@@ -99,7 +99,7 @@ def train():
 
             print('[val loss] : '+str(loss_ce.item())+
                   ' [val rmse] : '+str(loss_rmse.item()) +\
-                      '[val mae]: '+str(loss_mae.item()))
+                      ' [val mae]: '+str(loss_mae.item()))
             if best_loss > loss_rmse.item():
                 best_loss = loss_rmse.item()
                 best_epoch= epoch+1
@@ -119,10 +119,11 @@ def test():
     with torch.no_grad():
         u = torch.from_numpy(np.array(range(num_users))).to(device)
         v = torch.from_numpy(np.array(range(num_items))).to(device)
-        m_hat, loss_ce, loss_rmse = model(u, v, rating_test)
+        m_hat, loss_ce, loss_rmse, loss_mae = model(u, v, rating_test)
 
     print('[test loss] : '+str(loss_ce.item()) +
-          ' [test rmse] : '+str(loss_rmse.item()))
+          ' [test rmse] : '+str(loss_rmse.item()) +\
+              ' [test mae] :'+str(loss_mae.item()))
 
 def predict():
     model.load_state_dict(torch.load(os.path.join(args.model_path,
