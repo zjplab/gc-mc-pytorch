@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch.nn.utils.rnn as rnn
 from torchvision import models
 from layers import *
-from metrics import rmse, softmax_accuracy, softmax_cross_entropy
+from metrics import rmse, softmax_accuracy, softmax_cross_entropy, mae
 
 
 class GAE(nn.Module):
@@ -52,7 +52,7 @@ class GAE(nn.Module):
         - output:raw output
         - loss
         - rmse_loss
-        - mhat: predicted rating 
+        - mae_loss 
         '''
         u_z, v_z = self.gcl1(self.u_features, self.v_features,
                              range(self.num_users), range(self.num_items), r_matrix)
@@ -77,8 +77,8 @@ class GAE(nn.Module):
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
         loss = softmax_cross_entropy(output, r_mx.float())
         rmse_loss = rmse(m_hat, r_mx.float())
-
-        return output, loss, rmse_loss
+        mae_loss=mae(m_hat, r_mx.float())
+        return output, loss, rmse_loss, mae_loss
 
     def predict(self, u, v, r_matrix):
         '''

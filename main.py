@@ -62,6 +62,7 @@ def train():
 
         train_loss = 0.
         train_rmse = 0.
+        train_mae=0.
         for s, u in enumerate(BatchSampler(SequentialSampler(sample(range(num_users), num_users)),
                               batch_size=num_users, drop_last=False)):
                               #batch_size=args.batch_size, drop_last=False)):
@@ -74,7 +75,7 @@ def train():
                 if len(torch.nonzero(torch.index_select(torch.index_select(rating_train, 1, u), 2, v))) == 0:
                     continue
 
-                m_hat, loss_ce, loss_rmse = model(u, v, rating_train)
+                m_hat, loss_ce, loss_rmse, loss_mae = model(u, v, rating_train)
 
                 reset_grad()
                 loss_ce.backward()
@@ -82,9 +83,10 @@ def train():
 
                 train_loss += loss_ce.item()
                 train_rmse += loss_rmse.item()
-
+                train_mae  +=loss_mae.item()
         log = 'epoch: '+str(epoch+1)+' loss_ce: '  +str(train_loss/(s+1)/(t+1)) \
-                                    +' loss_rmse: '+str(train_rmse/(s+1)/(t+1))
+                                    +' loss_rmse: '+str(train_rmse/(s+1)/(t+1)) \
+                                    + 'loss_mae:' +str(train_mae/(s+1)/(t+1))
         print(log)
 
         if (epoch+1) % args.val_step == 0:
@@ -93,10 +95,11 @@ def train():
             with torch.no_grad():
                 u = torch.from_numpy(np.array(range(num_users))).to(device)
                 v = torch.from_numpy(np.array(range(num_items))).to(device)
-                m_hat, loss_ce, loss_rmse = model(u, v, rating_val)
+                m_hat, loss_ce, loss_rmse, loss_mae = model(u, v, rating_val)
 
             print('[val loss] : '+str(loss_ce.item())+
-                  ' [val rmse] : '+str(loss_rmse.item()))
+                  ' [val rmse] : '+str(loss_rmse.item()) +\
+                      '[val mae]: '+str(loss_mae.item()))
             if best_loss > loss_rmse.item():
                 best_loss = loss_rmse.item()
                 best_epoch= epoch+1

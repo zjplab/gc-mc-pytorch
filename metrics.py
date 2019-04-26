@@ -24,10 +24,34 @@ def rmse(logits, labels):
     Computes the mean square error with the predictions
     computed as average predictions. Note that without the average
     this cannot be used as a loss function as it would not be differentiable.
+    :param logits: predicted logits, mhat
+    :param labels: ground truth labels for the ratings, 1-D array containing 0-num_classes-1 ratings
+    -> r_mx
+    :param class_values: rating values corresponding to each class.
+    :return: mse
+    """
+    # remember label is 3d-tensor
+    omg = torch.sum(labels, 0).detach()
+    len_omg = len(torch.nonzero(omg))
+
+    pred_y = logits
+    y = torch.max(labels, 0)[1].float() + 1.
+
+    se = torch.sub(y, pred_y).pow_(2)
+    mse= torch.sum(torch.mul(omg, se))/len_omg #hadamard product
+    rmse = torch.sqrt(mse)
+
+    return rmse
+
+def mae(logits, labels):
+    """
+    Computes the mean absolute error with the predictions
+    computed as average predictions. Note that without the average
+    this cannot be used as a loss function as it would not be differentiable.
     :param logits: predicted logits
     :param labels: ground truth labels for the ratings, 1-D array containing 0-num_classes-1 ratings
     :param class_values: rating values corresponding to each class.
-    :return: mse
+    :return: mae
     """
 
     omg = torch.sum(labels, 0).detach()
@@ -36,11 +60,11 @@ def rmse(logits, labels):
     pred_y = logits
     y = torch.max(labels, 0)[1].float() + 1.
 
-    se = torch.sub(y, pred_y).pow_(2)
-    mse= torch.sum(torch.mul(omg, se))/len_omg
-    rmse = torch.sqrt(mse)
+    se = torch.sub(y, pred_y).abs_()
+    mae= torch.sum(torch.mul(omg, se))/len_omg
+    
 
-    return rmse
+    return mae
 
 
 def softmax_cross_entropy(input, target):
