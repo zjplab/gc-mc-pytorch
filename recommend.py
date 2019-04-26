@@ -35,7 +35,7 @@ def recommend(dataset:str, user:int):
     non_zero=np.nonzero(train[user,:])
     indices=np.argsort(mhat[user,:])
     indices=np.setdiff1d(indices, non_zero, assume_unique=True)
-    names=movie_df.title[ indices[-10::-1]]
+    names=movie_df.title[ indices[:-11:-1]]
     for n,name in enumerate(names):
         print("Top {} Movie Name: {}\n".format(n, name))
 
