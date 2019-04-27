@@ -85,7 +85,7 @@ def recommend_metric(dataset:str):
                     dcg_count+=1
                     tmp_dcg+=1/np.log2(index+1) if index>0 else 0
             tmp_idcg=np.sum([1/np.log2(i+1) for i in range(dcg_count) if i>0])
-            ndcg+=tmp_dcg/tmp_idcg
+            ndcg+=tmp_dcg/tmp_idcg if tmp_idcg>0 else 0
 
             #mean avg precision
             tmp_map_score=.0
