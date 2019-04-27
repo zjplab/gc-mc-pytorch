@@ -94,7 +94,8 @@ def recommend_metric(dataset:str):
                 if item in test10:
                     map_score_count+=1
                     tmp_map_score+=map_score_count/(index+1)
-            tmp_map_score/=map_score_count
+            if map_score_count>0:
+                tmp_map_score/=map_score_count
             map_score+=tmp_map_score
 
     #avg over
