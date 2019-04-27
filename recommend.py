@@ -83,8 +83,8 @@ def recommend_metric(dataset:str):
             for index, item in enumerate(rec10):
                 if item in test10:
                     dcg_count+=1
-                    tmp_dcg+=1/np.log2(index+1)
-            tmp_idcg=np.sum([1/np.log2(i+1) for i in range(dcg_count)])
+                    tmp_dcg+=1/np.log2(index+1) if index>0 else 0
+            tmp_idcg=np.sum([1/np.log2(i+1) for i in range(dcg_count) if i>0])
             ndcg+=tmp_dcg/tmp_idcg
 
             #mean avg precision
