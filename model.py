@@ -6,7 +6,7 @@ import torch.nn.utils.rnn as rnn
 from torchvision import models
 from layers import *
 from metrics import rmse, softmax_accuracy, softmax_cross_entropy, mae
-
+import pdb
 
 class GAE(nn.Module):
     '''
@@ -61,7 +61,7 @@ class GAE(nn.Module):
         u_h = self.denseu2(input_u)
         v_h = self.densev2(input_v)
 
-        
+        pdb.set_trace()
         output, m_hat = self.bilin_dec(u_h, v_h, u, v)
 
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
