@@ -188,10 +188,10 @@ class BilinearMixture(Module):
     To use in combination with bipartite layers.
     """
     def __init__(self, num_users, num_items, num_classes, input_dim,
-                 nb = 2, dropout=0.7, **kwargs):
+                 nb = 3, dropout=0.7, **kwargs):
         super(BilinearMixture, self).__init__(**kwargs)
 
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(1-dropout)
         self.weight = Parameter(torch.randn(nb, input_dim, input_dim))
         self.a = Parameter(torch.randn(nb, num_classes))
 
@@ -206,6 +206,10 @@ class BilinearMixture(Module):
         u_hidden = self.dropout(u_hidden)
         v_hidden = self.dropout(v_hidden)
 
+        #debug 
+        print(u_hidden.size)
+        print(v_hidden.size)
+        
         basis_outputs = []
         for weight in self.weight:
             u_w = torch.matmul(u_hidden, weight)

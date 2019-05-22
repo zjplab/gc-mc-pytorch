@@ -33,7 +33,7 @@ parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for Adam opt
 parser.add_argument('--beta2', type=float, default=0.999, help='beta2 for Adam optimizer')
 parser.add_argument('--dropout', type=float, default=0.7)
 parser.add_argument('--n_critic', type=int, default=5, help='number of D updates per each G update')
-parser.add_argument('--encoder_dropout', type=float, default=0.5)
+parser.add_argument('--decoder_dropout', type=float, default=1.0)
 parser.add_argument('--emb-dim', type=int, default=64)
 parser.add_argument('--hidden', default=[500,75])
 parser.add_argument('--nb', type=int, default=2)
@@ -157,7 +157,7 @@ rating_test = torch.load('./data/'+args.data_type+args.test_path).to(device)
 model = GAE(num_users, num_items, num_classes,
             num_side_features, args.nb,
             u_features, v_features, u_features_side, v_features_side,
-            num_users+num_items, args.emb_dim, args.hidden, args.dropout, args.encoder_dropout)
+            num_users+num_items, args.emb_dim, args.hidden, args.dropout, args.decoder_dropout)
 if torch.cuda.is_available():
     model.cuda()
 """Print out the network information."""

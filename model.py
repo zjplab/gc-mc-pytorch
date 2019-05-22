@@ -14,7 +14,7 @@ class GAE(nn.Module):
     '''
     def __init__(self, num_users, num_items, num_classes, num_side_features, nb,
                        u_features, v_features, u_features_side, v_features_side,
-                       input_dim, emb_dim, hidden, dropout, encoder_dropout, **kwargs):
+                       input_dim, emb_dim, hidden, dropout, decoder_dropout, **kwargs):
         super(GAE, self).__init__()
 
         self.num_users = num_users
@@ -39,7 +39,7 @@ class GAE(nn.Module):
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
                                          num_classes=num_classes,
                                          input_dim=hidden[1],
-                                         nb=nb, dropout=0)
+                                         nb=nb, dropout=encoder_dropout)
 
     def forward(self, u, v, r_matrix):
         '''
