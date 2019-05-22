@@ -84,9 +84,9 @@ def train():
                 train_loss += loss_ce.item()
                 train_rmse += loss_rmse.item()
                 train_mae  +=loss_mae.item()
-        log = 'epoch: '+str(epoch+1)+' loss_ce: '  +str(train_loss.item()/(s+1)/(t+1)) \
-                                    +' loss_rmse: '+str(train_rmse.item()/(s+1)/(t+1)) \
-                                    + 'loss_mae:' +str(train_mae.item()/(s+1)/(t+1))
+        log = 'epoch: '+str(epoch+1)+' loss_ce: '  +str(train_loss/(s+1)/(t+1)) \
+                                    +' loss_rmse: '+str(train_rmse/(s+1)/(t+1)) \
+                                    + 'loss_mae:' +str(train_mae/(s+1)/(t+1))
         print(log)
 
         if (epoch+1) % args.val_step == 0:
