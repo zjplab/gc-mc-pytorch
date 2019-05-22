@@ -27,7 +27,7 @@ class StackGCN(Module):
 
         self.act = act
         self.dropout = nn.Dropout(1-dropout)
-        self.u_weight = Parameter(torch.randn(num_classes, input_dim, hidden_dim / num_classes))
+        self.u_weight = Parameter(torch.randn(num_classes, input_dim, int(hidden_dim / num_classes)))
         # output : 100 dim each , 500 concatenated 
         #self.v_weight = Parameter(torch.randn(num_classes, input_dim, hidden_dim))
         self.v_weight = self.u_weight
