@@ -30,10 +30,10 @@ class GAE(nn.Module):
         self.gcl1 = StackGCN(input_dim, hidden[0],
                                     num_users, num_items,
                                     num_classes, torch.relu, self.dropout, bias=True)
-        self.denseu1 = Dense(num_side_features, emb_dim, bias=True, dropout=dropout)
+        self.denseu1 = Dense(input_dim, emb_dim, bias=True, dropout=dropout)
         self.denseu2 = Dense(hidden[0]+emb_dim, hidden[1], bias=True, dropout=dropout, act= \
             lambda x:x)
-        self.densev1 = Dense(num_side_features, emb_dim, bias=True, dropout=dropout)
+        self.densev1 = Dense(input_dim, emb_dim, bias=True, dropout=dropout)
         self.densev2 = Dense(hidden[0]+emb_dim, hidden[1], bias=True, dropout=dropout, act= \
             lambda x:x)
         self.bilin_dec = BilinearMixture(num_users=num_users, num_items=num_items,
