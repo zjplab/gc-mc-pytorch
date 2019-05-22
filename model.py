@@ -20,7 +20,7 @@ class GAE(nn.Module):
         self.num_users = num_users
         self.num_items = num_items
         self.dropout = dropout
-        self.encoder_dropout=encoder_dropout
+        self.encoder_dropout=decoder_dropout
 
         self.u_features = u_features
         self.v_features = v_features
