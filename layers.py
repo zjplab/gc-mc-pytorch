@@ -207,9 +207,7 @@ class BilinearMixture(Module):
         u_hidden = self.dropout(u_hidden)
         v_hidden = self.dropout(v_hidden)
 
-        #debug 
-        print(u_hidden.size)
-        print(v_hidden.size)
+
 
         basis_outputs = []
         for weight in self.weight:
