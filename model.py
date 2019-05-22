@@ -22,9 +22,9 @@ class GAE(nn.Module):
         self.dropout = dropout
         self.encoder_dropout=decoder_dropout
 
-        self.u_features = u_features
+        self.u_features = u_features #943*2625
         self.v_features = v_features
-        self.u_features_side = u_features_side
+        self.u_features_side = u_features_side #943*41
         self.v_features_side = v_features_side
 
         self.gcl1 = StackGCN(input_dim, hidden[0],
@@ -40,7 +40,10 @@ class GAE(nn.Module):
                                          num_classes=num_classes,
                                          input_dim=hidden[1],
                                          nb=nb, dropout=decoder_dropout)
-
+        #for debug purpose
+        self.input_dim=input_dim
+        self.num_side_features=num_side_features
+        
     def forward(self, u, v, r_matrix):
         '''
         Returns:
