@@ -42,7 +42,7 @@ class StackGCN(Module):
         for w in [self.u_weight, self.v_weight]:
             nn.init.kaiming_normal_(w) 
         for w in [self.u_bias, self.v_bias]:
-            nn.init.kaiming_uniform_(w)
+            nn.init.xavier_uniform_(w)
 
     def normalize(self, mx):
         """Row-normalize sparse matrix"""
