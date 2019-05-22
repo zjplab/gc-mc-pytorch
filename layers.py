@@ -14,6 +14,7 @@ class Dense(nn.Module):
 
     def forward(self, x):
         x = self.dropout(x)
+        x= self.fc1(x)
         x = self.act(x)
         return x
 
@@ -209,7 +210,7 @@ class BilinearMixture(Module):
         #debug 
         print(u_hidden.size)
         print(v_hidden.size)
-        
+
         basis_outputs = []
         for weight in self.weight:
             u_w = torch.matmul(u_hidden, weight)
