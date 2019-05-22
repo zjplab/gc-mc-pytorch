@@ -85,19 +85,15 @@ class GAE(nn.Module):
                              range(self.num_users), range(self.num_items), r_matrix)
         #range(self.number) has no use
 
-        u_f = torch.relu(self.denseu1(self.u_features_side[u]))
-        v_f = torch.relu(self.densev1(self.v_features_side[v]))
+        u_f = self.denseu1(self.u_features_side[u])
+        v_f = self.densev1(self.v_features_side[v])
 
+        input_u=torch.cat((u_z, u_f), dim=1)
+        input_v=torch.cat((v_z, v_f), dim=1)
+        u_h = self.denseu2(input_u)
+        v_h = self.densev2(input_v)
 
-        #debug
-        """ print(u_z.size(), self.weight_u.size(), \
-            u_f.size(), self.weight2_u.size(), \
-                 v_z.size(),self.weight_v.size(),\
-                      v_f.size(), self.weight2_v.size()) """
-        u_h=torch.relu( torch.mm(F.dropout(u_z,p=self.dropout), self.weight_u ) + \
-            torch.mm(F.dropout(u_f, p=self.dropout), self.weight2_u) )
-        v_h=torch.relu(torch.mm( F.dropout(v_z, p=self.dropout), self.weight_v) + \
-            torch.mm(F.dropout(v_f, p=self.dropout), self.weight2_v) )
+        #pdb.set_trace()
         output, m_hat = self.bilin_dec(u_h, v_h, u, v)
 
         r_mx = r_matrix.index_select(1, u).index_select(2, v)
