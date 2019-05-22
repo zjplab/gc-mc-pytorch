@@ -34,8 +34,8 @@ parser.add_argument('--beta2', type=float, default=0.999, help='beta2 for Adam o
 parser.add_argument('--dropout', type=float, default=0.7)
 parser.add_argument('--n_critic', type=int, default=5, help='number of D updates per each G update')
 parser.add_argument('--encoder_dropout', type=float, default=0.5)
-parser.add_argument('--emb-dim', type=int, default=32)
-parser.add_argument('--hidden', default=[64,32,16, 8])
+parser.add_argument('--emb-dim', type=int, default=64)
+parser.add_argument('--hidden', default=[500,75])
 parser.add_argument('--nb', type=int, default=2)
 
 parser.add_argument('--train_path', '-train',type=str, default='/rating_0.pkl')#train.pkl')
