@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
+import pdb
 
 class Dense(nn.Module):
     def __init__(self, input, output, bias, dropout, act=torch.relu):
@@ -217,6 +218,9 @@ class BilinearMixture(Module):
 
         basis_outputs = torch.stack(basis_outputs, 2)
         outputs = torch.matmul(basis_outputs, self.a)
+        #debug
+        pdb.set_trace()
+
         outputs = outputs + self.u_bias[u].unsqueeze(1).repeat(1,outputs.size(1),1) \
                           + self.v_bias[v].unsqueeze(0).repeat(outputs.size(0),1,1)
         outputs = outputs.permute(2,0,1)

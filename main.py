@@ -36,7 +36,7 @@ parser.add_argument('--n_critic', type=int, default=5, help='number of D updates
 parser.add_argument('--decoder_dropout', type=float, default=1.0)
 parser.add_argument('--emb-dim', type=int, default=64)
 parser.add_argument('--hidden', default=[500,75])
-parser.add_argument('--nb', type=int, default=2)
+parser.add_argument('--nb', type=int, default=3)
 
 parser.add_argument('--train_path', '-train',type=str, default='/rating_0.pkl')#train.pkl')
 parser.add_argument('--val_path','-val', type=str, default='/rating_1.pkl')#val.pkl')
