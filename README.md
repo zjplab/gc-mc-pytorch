@@ -20,8 +20,8 @@ python main.py
 ## Performace
 
 
-|               | Kipf and Welling  | Ours  |
+|               | Kipf and Welling  | My Implementation  |
 | ------------- |:-------------:| -----:|
-| ML-100K       | 0.910         | 0.935 |
+| ML-100K       | 0.910         | 0.9200539588928223  |
 | ML-100K (+Feat)| 0.905        | 0.932 |
 | ML-1M         | 0.832         |    -  |
