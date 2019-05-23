@@ -217,16 +217,17 @@ class BilinearMixture(Module):
             basis_outputs.append(x)
 
         basis_outputs = torch.stack(basis_outputs, 2)
-        outputs = torch.matmul(basis_outputs, self.a)
-        #debug
-        pdb.set_trace()
+        outputs = torch.matmul(basis_outputs, self.a) # (932， 1682，5)
+  
 
         outputs = outputs + self.u_bias[u].unsqueeze(1).repeat(1,outputs.size(1),1) \
                           + self.v_bias[v].unsqueeze(0).repeat(outputs.size(0),1,1)
-        outputs = outputs.permute(2,0,1)
+        outputs = outputs.permute(2,0,1) # (5, 932, 1682)
 
         softmax_out = F.softmax(outputs, 0)
         m_hat = torch.stack([(r+1)*output for r, output in enumerate(softmax_out)], 0)
         m_hat = torch.sum(m_hat, 0)
 
+        #debug
+        pdb.set_trace()
         return outputs, m_hat
