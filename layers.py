@@ -228,6 +228,5 @@ class BilinearMixture(Module):
         m_hat = torch.stack([(r+1)*output for r, output in enumerate(softmax_out)], 0)
         m_hat = torch.sum(m_hat, 0)
 
-        #debug
-        pdb.set_trace()
+
         return outputs, m_hat
